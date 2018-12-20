@@ -94,10 +94,12 @@ public class MainActivity extends AppCompatActivity implements ChatContract.View
     private NiceSpinner spEmotion;
     private int selectedEmotion = Constant.ANGRY;
     private List<String> emotionList;
+    private int[] emotionNums;
 
     private ListView mListView;
     private EditText etChatMessage;
     private Button btnSend;
+    private TextView tvCompleted;
 
     private InputMethodManager imm;//软键盘服务
 
@@ -145,6 +147,8 @@ public class MainActivity extends AppCompatActivity implements ChatContract.View
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //toast("select:"+position);
                 selectedEmotion = position;
+                tvCompleted.setText(emotionNums[selectedEmotion]+"");
+                mPresenter.getDialogueMessage(mClickAccount,selectedEmotion);
             }
 
             @Override
@@ -161,12 +165,16 @@ public class MainActivity extends AppCompatActivity implements ChatContract.View
         mFacePaint.setStyle(Paint.Style.STROKE);
         mFacePaint.setColor(Color.RED);
 
+        //更新当前已识别文字
+        tvCompleted = findViewById(R.id.tv_completed);
+        emotionNums = Constant.readCompletedNums(MainActivity.this);
+        tvCompleted.setText(emotionNums[selectedEmotion]+"");
     }
 
     protected void initData() {
         mClickAccount = PreferenceManager.getDefaultSharedPreferences(this).getString("username","");
-        mPresenter.getDialogueMessage(mClickAccount,selectedEmotion);
         //获取缓存数据
+        mPresenter.getDialogueMessage(mClickAccount,selectedEmotion);
     }
 
     protected void initListener() {
@@ -253,13 +261,6 @@ public class MainActivity extends AppCompatActivity implements ChatContract.View
         switch (v.getId()) {
             case R.id.btn_send:
                 //etChatMessage.clearFocus();
-                String prefix = "" + System.currentTimeMillis();
-                mFilePic = new File(getExternalFilesDir(null),  prefix + ".png");
-                mFileText = new File(getExternalFilesDir(null), prefix + ".txt");
-                // save picture
-                takePicture();
-                // save text
-                saveText(getMessage());
                 mPresenter.sendMessage(mClickAccount,selectedEmotion);
                 //界面上显示发送文字 同时存入数据库
                 break;
@@ -371,11 +372,11 @@ public class MainActivity extends AppCompatActivity implements ChatContract.View
 
     @Override
     public void showDialogueMessage(Cursor cursor) {
-        if (mCursorAdapter != null) {
-            mCursorAdapter.getCursor().requery();
-            mListView.setSelection(cursor.getCount() - 1);//让ListView到达最后一列
-            return;
-        }
+//        if (mCursorAdapter != null) {
+//            mCursorAdapter.getCursor().requery();
+//            mListView.setSelection(cursor.getCount() - 1);//让ListView到达最后一列
+//            return;
+//        }
 
         mCursorAdapter = new MyCursorAdapter(MainActivity.this, cursor);
         mListView.setAdapter(mCursorAdapter);
@@ -390,6 +391,25 @@ public class MainActivity extends AppCompatActivity implements ChatContract.View
 
     @Override
     public void clearMessage() {
+        //计数器加一
+        emotionNums[selectedEmotion]++;
+        tvCompleted.setText(emotionNums[selectedEmotion]+"");
+        if(tvCompleted.equals(Constant.EMOTION_TOTAL_NUM)){
+            toast("你已采集完“"+Constant.EMOTION_ARRAY[selectedEmotion]+"”的所有数据");
+        }
+        //更新缓存
+        Constant.saveCompletedNums(MainActivity.this,emotionNums);
+        //存储照片与文字
+        String path = Constant.PROJECT_FILE_PATH + mClickAccount +"/"+Constant.EMOTION_ARRAY[selectedEmotion]+"/";
+        if (!new File(path).exists()) {
+            new File(path).mkdirs();
+        }
+        mFilePic = new File(path,"face"+emotionNums[selectedEmotion]+".png");
+        mFileText = new File(path,"text"+emotionNums[selectedEmotion]+".txt");
+        // save picture
+        takePicture();
+        // save text
+        saveText(getMessage());
         etChatMessage.setText("");
     }
 

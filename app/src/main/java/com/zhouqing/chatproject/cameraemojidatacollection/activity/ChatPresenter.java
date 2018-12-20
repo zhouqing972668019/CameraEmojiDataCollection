@@ -59,6 +59,7 @@ public class ChatPresenter implements ChatContract.Presenter {
                     ThreadUtil.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            //更新界面
                             mView.clearMessage();
                         }
                     });
