@@ -8,13 +8,8 @@ import com.zhouqing.chatproject.cameraemojidatacollection.common.BaseView;
 
 public class ChatContract {
     public interface Presenter extends BasePresenter {
-        void getDialogueMessage(String clickAccout);
-
-        void sendMessage(String clickAccout);
-
-        void bindIMService();
-
-        void unbindIMService();
+        void getDialogueMessage(String clickAccout,int type);
+        void sendMessage(String clickAccout, int type);
     }
 
     public interface View extends BaseView<Presenter> {

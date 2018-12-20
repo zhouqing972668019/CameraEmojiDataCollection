@@ -25,6 +25,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.MainActivity"></activity>
+        <provider
+            android:name=".provider.SmsProvider"
+            android:authorities="com.zhouqing.chatproject.cameraemojidatacollection.provider.SmsProvider"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>
