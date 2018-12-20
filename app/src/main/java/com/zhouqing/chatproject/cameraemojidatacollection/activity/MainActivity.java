@@ -89,6 +89,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
+import static com.zhouqing.chatproject.cameraemojidatacollection.util.Constant.OFFSET_LONG;
+
 public class MainActivity extends AppCompatActivity implements ChatContract.View, View.OnClickListener {
 
     private NiceSpinner spEmotion;
@@ -394,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements ChatContract.View
         //计数器加一
         emotionNums[selectedEmotion]++;
         tvCompleted.setText(emotionNums[selectedEmotion]+"");
-        if(tvCompleted.equals(Constant.EMOTION_TOTAL_NUM)){
+        if(emotionNums[selectedEmotion] == Constant.EMOTION_TOTAL_NUM){
             toast("你已采集完“"+Constant.EMOTION_ARRAY[selectedEmotion]+"”的所有数据");
         }
         //更新缓存
@@ -935,7 +937,7 @@ public class MainActivity extends AppCompatActivity implements ChatContract.View
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session,
                                                @NonNull CaptureRequest request,
                                                @NonNull TotalCaptureResult result) {
-                    showToast("Saved: " + mFilePic);
+                    //showToast("Saved: " + mFilePic);
                     Log.d(TAG, mFilePic.toString());
                     unlockFocus();
                     etChatMessage.clearFocus();
@@ -1046,16 +1048,16 @@ public class MainActivity extends AppCompatActivity implements ChatContract.View
                 Rect bounds = mFaces[0].getBounds();
                 switch (mCameraSensorOrientation) {
                     case 90:
-                        face = Bitmap.createBitmap(face, (int) (face.getWidth() - bounds.bottom / y),
-                                (int) (bounds.left / x),
-                                (int) ((bounds.bottom - bounds.top) / y),
-                                (int) ((bounds.right - bounds.left) / x));
+                        face = Bitmap.createBitmap(face, (int) (face.getWidth() - bounds.bottom / y - OFFSET_LONG),
+                                (int) (bounds.left / x - OFFSET_LONG),
+                                (int) ((bounds.bottom - bounds.top) / y + 2*OFFSET_LONG),
+                                (int) ((bounds.right - bounds.left) / x) + 4*OFFSET_LONG);
                         break;
                     case 270:
-                        face = Bitmap.createBitmap(face, (int) (bounds.top / x),
-                                (int) (face.getHeight() - bounds.right / y),
-                                (int) ((bounds.bottom - bounds.top) / x),
-                                (int) ((bounds.right - bounds.left) / y));
+                        face = Bitmap.createBitmap(face, (int) (bounds.top / x - OFFSET_LONG),
+                                (int) (face.getHeight() - bounds.right / y - OFFSET_LONG),
+                                (int) ((bounds.bottom - bounds.top) / x + 2*OFFSET_LONG),
+                                (int) ((bounds.right - bounds.left) / y) + 4*OFFSET_LONG);
                         break;
                 }
 

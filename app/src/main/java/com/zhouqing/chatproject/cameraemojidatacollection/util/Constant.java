@@ -17,7 +17,7 @@ public class Constant {
 
     public static final String[] EMOTION_ARRAY = {"Angry","Disgust","Fear","Happy","Sad","Surprise","Neutral"};
 
-    public static final int EMOTION_TOTAL_NUM = 5; //每一组情绪采集的数据组数量
+    public static final int EMOTION_TOTAL_NUM = 20; //每一组情绪采集的数据组数量
 
     //项目存储文件的路径
     public static String PROJECT_FILE_PATH
@@ -25,7 +25,8 @@ public class Constant {
 
     public static int[] readCompletedNums(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String completedNums = sharedPreferences.getString("completedNums","");
+        String username = sharedPreferences.getString("username","");
+        String completedNums = sharedPreferences.getString(username+"_completedNums","");
         int[] answer = new int[7];
         if(completedNums == null || completedNums.equals("")){
             return answer;
@@ -39,12 +40,17 @@ public class Constant {
 
     public static void saveCompletedNums(Context context, int[] completedNums){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String username = sharedPreferences.getString("username","");
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String answer = "";
         for(int i=0;i<completedNums.length;i++){
             answer += completedNums[i] + ",";
         }
-        editor.putString("completedNums",answer.substring(0,answer.length()-1));
+        editor.putString(username+"_completedNums",answer.substring(0,answer.length()-1));
         editor.apply();
     }
+
+    //人脸框加长偏移
+    public static final int OFFSET_SHORT = 20;
+    public static final int OFFSET_LONG = 40;
 }
