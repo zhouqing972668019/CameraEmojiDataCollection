@@ -1,0 +1,3 @@
+# CameraEmojiDataCollection
+用于CameraEmojiDemo项目采集数据
+用于控制程序的相关参数在Constant类中，可自行修改
